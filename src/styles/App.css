@@ -1,0 +1,303 @@
+/* ─── Reset & Base ─────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0f0f1a;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+/* ─── App Container ────────────────────────────── */
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ─── Header ───────────────────────────────────── */
+.header {
+  text-align: center;
+  padding: 20px 0;
+  margin-bottom: 20px;
+}
+
+.logo {
+  font-size: 3rem;
+  font-weight: 800;
+}
+
+.logo-sort {
+  color: #6c63ff;
+}
+
+.logo-viz {
+  color: #ff6b6b;
+}
+
+.tagline {
+  color: #888;
+  font-size: 1.1rem;
+  margin-top: 5px;
+}
+
+/* ─── Controls ─────────────────────────────────── */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #1a1a2e;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-group label {
+  font-size: 0.85rem;
+  color: #aaa;
+  font-weight: 600;
+}
+
+.control-group select {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 2px solid #6c63ff;
+  background: #0f0f1a;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  cursor: pointer;
+  outline: none;
+  min-width: 200px;
+}
+
+.control-group select:hover {
+  border-color: #ff6b6b;
+}
+
+.control-group select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Range Slider ─────────────────────────────── */
+input[type='range'] {
+  -webkit-appearance: none;
+  width: 150px;
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #6c63ff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+  background: #ff6b6b;
+}
+
+input[type='range']:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Complexity Info ───────────────────────────── */
+.complexity-info {
+  padding: 8px 16px;
+  background: #252547;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #ffd93d;
+  font-weight: 600;
+}
+
+/* ─── Buttons ──────────────────────────────────── */
+.buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-generate {
+  background: #6c63ff;
+  color: white;
+}
+
+.btn-generate:hover:not(:disabled) {
+  background: #5a52d5;
+}
+
+.btn-sort {
+  background: #6bcb77;
+  color: white;
+}
+
+.btn-sort:hover:not(:disabled) {
+  background: #5ab568;
+}
+
+.btn-reset {
+  background: #ff6b6b;
+  color: white;
+}
+
+.btn-reset:hover:not(:disabled) {
+  background: #e55a5a;
+}
+
+/* ─── Stats Bar ────────────────────────────────── */
+.stats-bar {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 12px;
+  background: #1a1a2e;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #aaa;
+}
+
+.stats-bar span {
+  color: #4ecdc4;
+}
+
+/* ─── Legend ────────────────────────────────────── */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 15px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+/* ─── Bars Container ───────────────────────────── */
+.bars-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  height: 520px;
+  padding: 10px;
+  background: #1a1a2e;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ─── Bar ──────────────────────────────────────── */
+.bar {
+  border-radius: 3px 3px 0 0;
+  transition: height 0.05s ease, background-color 0.1s ease;
+}
+
+/* ─── Responsive ───────────────────────────────── */
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .buttons {
+    justify-content: center;
+  }
+
+  .stats-bar {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .bars-container {
+    height: 350px;
+  }
+
+  .logo {
+    font-size: 2rem;
+  }
+}
+.custom-input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #333;
+  background: #0f0f1a;
+  color: #e0e0e0;
+  width: 180px;
+}
+
+.btn-apply {
+  padding: 8px 12px;
+  background: #ff9f43; /* Orange color to stand out */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-apply:hover:not(:disabled) {
+  background: #e68a2e;
+}
