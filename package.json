@@ -2,7 +2,7 @@
   "name": "sortviz",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://ankithaa.github.io/sortviz",
+  "homepage": "https://A-Ankitha.github.io/SortViz",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
