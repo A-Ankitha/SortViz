@@ -18,23 +18,21 @@ function SortingVisualizer() {
   const [array, setArray] = useState([]);
   const [colors, setColors] = useState([]);
   const [algorithm, setAlgorithm] = useState('bubble');
-  const [arraySize, setArraySize] = useState(20); // Lowered default size to see numbers clearly
+  const [arraySize, setArraySize] = useState(10); // Start small to see numbers
   const [speed, setSpeed] = useState(3);
   const [isSorting, setIsSorting] = useState(false);
   const [stats, setStats] = useState({ comparisons: 0, swaps: 0 });
   const [customInput, setCustomInput] = useState('');
 
   const stopRef = useRef(false);
-  
+
   const generateArray = useCallback(() => {
-    const newArray = [];
-    const newColors = [];
-    for (let i = 0; i < arraySize; i++) {
-      newArray.push(Math.floor(Math.random() * 400) + 20);
-      newColors.push(DEFAULT_COLOR);
-    }
+    const newArray = Array.from(
+      { length: arraySize }, 
+      () => Math.floor(Math.random() * 350) + 20
+    );
     setArray(newArray);
-    setColors(newColors);
+    setColors(newArray.map(() => '#6c63ff'));
     setStats({ comparisons: 0, swaps: 0 });
   }, [arraySize]);
 
@@ -42,156 +40,126 @@ function SortingVisualizer() {
     if (!isSorting) {
       generateArray();
     }
-  }, [arraySize, generateArray]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arraySize]); 
 
   const handleApplyCustom = () => {
     if (!customInput.trim()) return;
+
     const newArray = customInput
       .split(',')
-      .map(num => parseInt(num.trim()))
-      .filter(num => !isNaN(num) && num > 0);
+      .map(n => parseInt(n.trim()))
+      .filter(n => !isNaN(n) && n > 0);
 
     if (newArray.length > 0) {
-      setArray(newArray);
-      setColors(newArray.map(() => DEFAULT_COLOR));
-      setArraySize(newArray.length);
       setStats({ comparisons: 0, swaps: 0 });
+      setArray(newArray);
+      setColors(newArray.map(() => '#6c63ff'));
+      setArraySize(newArray.length); 
     }
   };
 
-  const getDelay = () => {
-    const delays = [200, 100, 50, 10, 2];
-    return delays[speed - 1];
-  };
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const playAnimations = async (animations) => {
+    let comps = 0;
+    let swps = 0;
+    const delay = [200, 100, 50, 10, 2][speed - 1];
+    let colorArr = array.map(() => '#6c63ff');
+
+    for (const anim of animations) {
+      if (stopRef.current) break;
+
+      if (anim.type === 'compare') {
+        const [i, j] = anim.indices;
+        colorArr[i] = colorArr[j] = '#ff6b6b';
+        setColors([...colorArr]);
+        await sleep(delay);
+        colorArr[i] = colorArr[j] = '#6c63ff';
+        setColors([...colorArr]);
+        comps++;
+      } 
+      else if (anim.type === 'swap' || anim.type === 'overwrite') {
+        const indices = anim.type === 'swap' ? anim.indices : [anim.index];
+        const values = anim.type === 'swap' ? anim.values : [anim.value];
+
+        indices.forEach(idx => colorArr[idx] = '#ffd93d');
+        setColors([...colorArr]);
+        
+        setArray(prev => {
+          const next = [...prev];
+          indices.forEach((idx, i) => next[idx] = values[i]);
+          return next;
+        });
+
+        await sleep(delay);
+        indices.forEach(idx => colorArr[idx] = '#6c63ff');
+        setColors([...colorArr]);
+        swps++;
+      }
+      setStats({ comparisons: comps, swaps: swps });
+    }
+  };
 
   const handleSort = async () => {
     if (isSorting) return;
     setIsSorting(true);
     stopRef.current = false;
-
-    setColors(array.map(() => DEFAULT_COLOR));
-
+    
     let animations = [];
-    switch (algorithm) {
-      case 'bubble': animations = getBubbleSortAnimations(array); break;
-      case 'selection': animations = getSelectionSortAnimations(array); break;
-      case 'insertion': animations = getInsertionSortAnimations(array); break;
-      case 'merge': animations = getMergeSortAnimations(array); break;
-      case 'quick': animations = getQuickSortAnimations(array); break;
-      case 'heap': animations = getHeapSortAnimations(array); break;
-      default: animations = getBubbleSortAnimations(array);
-    }
+    if (algorithm === 'bubble') animations = getBubbleSortAnimations(array);
+    if (algorithm === 'selection') animations = getSelectionSortAnimations(array);
+    if (algorithm === 'insertion') animations = getInsertionSortAnimations(array);
+    if (algorithm === 'merge') animations = getMergeSortAnimations(array);
+    if (algorithm === 'quick') animations = getQuickSortAnimations(array);
+    if (algorithm === 'heap') animations = getHeapSortAnimations(array);
 
     await playAnimations(animations);
 
-    if (!stopRef.current) {
-      const finalSortedColors = array.map(() => SORTED_COLOR);
-      setColors(finalSortedColors);
-    }
-
+    if (!stopRef.current) setColors(array.map(() => '#6bcb77'));
     setIsSorting(false);
-  };
-
-  const playAnimations = async (animations) => {
-    let comparisons = 0;
-    let swaps = 0;
-    const delay = getDelay();
-    
-    let colorArr = array.map(() => DEFAULT_COLOR);
-
-    for (let i = 0; i < animations.length; i++) {
-      if (stopRef.current) break;
-      const anim = animations[i];
-
-      switch (anim.type) {
-        case 'compare': {
-          const [idx1, idx2] = anim.indices;
-          colorArr[idx1] = COMPARE_COLOR;
-          colorArr[idx2] = COMPARE_COLOR;
-          comparisons++;
-          setColors([...colorArr]);
-          await sleep(delay);
-          if (colorArr[idx1] !== SORTED_COLOR) colorArr[idx1] = DEFAULT_COLOR;
-          if (colorArr[idx2] !== SORTED_COLOR) colorArr[idx2] = DEFAULT_COLOR;
-          setColors([...colorArr]);
-          break;
-        }
-        case 'swap': {
-          const [idx1, idx2] = anim.indices;
-          const [val1, val2] = anim.values;
-          colorArr[idx1] = SWAP_COLOR;
-          colorArr[idx2] = SWAP_COLOR;
-          swaps++;
-          
-          setArray(prev => {
-            const newArr = [...prev];
-            newArr[idx1] = val1;
-            newArr[idx2] = val2;
-            return newArr;
-          });
-          
-          setColors([...colorArr]);
-          await sleep(delay);
-          if (colorArr[idx1] !== SORTED_COLOR) colorArr[idx1] = DEFAULT_COLOR;
-          if (colorArr[idx2] !== SORTED_COLOR) colorArr[idx2] = DEFAULT_COLOR;
-          setColors([...colorArr]);
-          break;
-        }
-        case 'overwrite': {
-          const { index, value } = anim;
-          colorArr[index] = SWAP_COLOR;
-          
-          setArray(prev => {
-            const newArr = [...prev];
-            newArr[index] = value;
-            return newArr;
-          });
-          
-          setColors([...colorArr]);
-          await sleep(delay);
-          colorArr[index] = DEFAULT_COLOR;
-          setColors([...colorArr]);
-          break;
-        }
-        default: break;
-      }
-      setStats({ comparisons, swaps });
-    }
   };
 
   const handleReset = () => {
     stopRef.current = true;
     setIsSorting(false);
-    setStats({ comparisons: 0, swaps: 0 });
     generateArray();
   };
 
-  const getBarWidth = () => {
-    const containerWidth = 800;
-    const gap = 5;
-    return Math.max(20, Math.floor((containerWidth - arraySize * gap) / arraySize));
-  };
-
   return (
-    <div className="visualizer">
-      <Controls
-        algorithm={algorithm} setAlgorithm={setAlgorithm}
-        arraySize={arraySize} setArraySize={setArraySize}
-        speed={speed} setSpeed={setSpeed}
-        onGenerate={generateArray} onSort={handleSort}
-        onReset={handleReset} isSorting={isSorting}
-        setCustomInput={setCustomInput} onApplyCustom={handleApplyCustom}
+    <div className="app">
+      <Controls 
+        algorithm={algorithm} 
+        setAlgorithm={setAlgorithm}
+        speed={speed} 
+        setSpeed={setSpeed}
+        onGenerate={handleReset} 
+        onSort={handleSort}
+        onReset={handleReset} 
+        isSorting={isSorting}
+        setCustomInput={setCustomInput} 
+        onApplyCustom={handleApplyCustom}
+        arraySize={arraySize}
+        setArraySize={setArraySize}
       />
       <div className="stats-bar">
         <span>Comparisons: {stats.comparisons}</span>
         <span>Swaps: {stats.swaps}</span>
       </div>
-      <div className="bars-container">
-        {array.map((value, idx) => (
-          <Bar key={idx} height={value} color={colors[idx]} width={getBarWidth()} />
-        ))}
+      <div className="bars-container" style={{ overflow: 'visible', paddingTop: '40px' }}>
+        {array.map((val, i) => {
+          const dynamicWidth = Math.floor((800 - (array.length * 4)) / array.length);
+          const finalWidth = Math.max(25, Math.min(60, dynamicWidth));
+
+          return (
+            <Bar 
+              key={i} 
+              height={val} 
+              color={colors[i]} 
+              width={finalWidth} 
+            />
+          );
+        })}
       </div>
     </div>
   );

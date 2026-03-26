@@ -9,8 +9,10 @@ function Controls({
   onSort,
   onReset,
   isSorting,
-  setCustomInput, 
+  setCustomInput,
   onApplyCustom,
+  arraySize,
+  setArraySize
 }) {
   const algorithms = [
     { value: 'bubble', label: 'Bubble Sort', complexity: 'O(n²)' },
@@ -25,7 +27,20 @@ function Controls({
 
   return (
     <div className="controls">
-      {/* Algorithm Selector */}
+      {/* 1. Array Size Slider (n) */}
+      <div className="control-group">
+        <label>Array Size (n): {arraySize}</label>
+        <input
+          type="range"
+          min="5"
+          max="50"
+          value={arraySize}
+          onChange={(e) => setArraySize(Number(e.target.value))}
+          disabled={isSorting}
+        />
+      </div>
+
+      {/* 2. Algorithm Selector */}
       <div className="control-group">
         <label>Algorithm</label>
         <select
@@ -41,20 +56,20 @@ function Controls({
         </select>
       </div>
 
-      {/* Manual Input Section */}
+      {/* 3. Manual Input Section */}
       <div className="control-group">
         <label>Manual Input (comma separated)</label>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <input 
-            type="text" 
-            placeholder="e.g. 10, 50, 30" 
+          <input
+            type="text"
+            placeholder="e.g. 10, 50, 30"
             onChange={(e) => setCustomInput(e.target.value)}
             disabled={isSorting}
             className="custom-input"
           />
-          <button 
-            onClick={onApplyCustom} 
-            disabled={isSorting} 
+          <button
+            onClick={onApplyCustom}
+            disabled={isSorting}
             className="btn-apply"
           >
             Apply
@@ -62,7 +77,7 @@ function Controls({
         </div>
       </div>
 
-      {/* Speed Control */}
+      {/* 4. Speed Control */}
       <div className="control-group">
         <label>Speed: {speed}x</label>
         <input
@@ -71,15 +86,16 @@ function Controls({
           max="5"
           value={speed}
           onChange={(e) => setSpeed(Number(e.target.value))}
+          disabled={isSorting}
         />
       </div>
 
-      {/* Complexity Info */}
+      {/* 5. Complexity Info */}
       <div className="complexity-info">
         <span>Time: {currentAlgo?.complexity}</span>
       </div>
 
-      {/* Action Buttons */}
+      {/* 6. Action Buttons */}
       <div className="buttons">
         <button
           className="btn btn-generate"
@@ -88,7 +104,7 @@ function Controls({
         >
           🔄 Generate New Array
         </button>
-        <button 
+        <button
           className="btn btn-sort"
           onClick={onSort}
           disabled={isSorting}

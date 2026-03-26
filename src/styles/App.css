@@ -251,7 +251,7 @@ input[type='range']:disabled {
   padding: 40px 10px 10px 10px;
   background: #1a1a2e;
   border-radius: 12px;
-  overflow: visible; 
+  overflow: visible !important; 
   margin-top: 20px;
 }
 

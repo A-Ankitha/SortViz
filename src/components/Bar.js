@@ -8,20 +8,17 @@ function Bar({ height, color, width }) {
         height: `${height}px`,
         backgroundColor: color,
         width: `${width}px`,
+        position: 'relative', // Vital for the label
         display: 'flex',
-        justifyContent: 'center',
-        position: 'relative',
-        borderRadius: '4px 4px 0 0',
-        transition: 'background-color 0.2s ease, height 0.2s ease'
+        justifyContent: 'center'
       }}
     >
-      
       <span style={{
         position: 'absolute',
-        top: '-25px', 
+        top: '-25px',
         color: 'white',
-        fontSize: width > 25 ? '12px' : '10px', 
-        pointerEvents: 'none'
+        fontSize: '12px',
+        fontWeight: 'bold'
       }}>
         {height}
       </span>
