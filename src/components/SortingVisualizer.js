@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Bar from './Bar';
 import Controls from './Controls';
 
-// Import all algorithms
 import { getBubbleSortAnimations } from '../algorithms/bubbleSort';
 import { getSelectionSortAnimations } from '../algorithms/selectionSort';
 import { getInsertionSortAnimations } from '../algorithms/insertionSort';
@@ -43,7 +42,7 @@ function SortingVisualizer() {
     if (!isSorting) {
       generateArray();
     }
-  }, [arraySize, generateArray, isSorting]);
+  }, [arraySize, generateArray]);
 
   const handleApplyCustom = () => {
     if (!customInput.trim()) return;
@@ -72,6 +71,8 @@ function SortingVisualizer() {
     setIsSorting(true);
     stopRef.current = false;
 
+    setColors(array.map(() => DEFAULT_COLOR));
+
     let animations = [];
     switch (algorithm) {
       case 'bubble': animations = getBubbleSortAnimations(array); break;
@@ -85,10 +86,11 @@ function SortingVisualizer() {
 
     await playAnimations(animations);
 
-    // FINAL STAGE: Mark everything green and stop
     if (!stopRef.current) {
-      setColors(array.map(() => SORTED_COLOR));
+      const finalSortedColors = array.map(() => SORTED_COLOR);
+      setColors(finalSortedColors);
     }
+
     setIsSorting(false);
   };
 
@@ -96,7 +98,7 @@ function SortingVisualizer() {
     let comparisons = 0;
     let swaps = 0;
     const delay = getDelay();
-    const arr = [...array];
+    
     let colorArr = array.map(() => DEFAULT_COLOR);
 
     for (let i = 0; i < animations.length; i++) {
@@ -111,8 +113,9 @@ function SortingVisualizer() {
           comparisons++;
           setColors([...colorArr]);
           await sleep(delay);
-          colorArr[idx1] = DEFAULT_COLOR;
-          colorArr[idx2] = DEFAULT_COLOR;
+          if (colorArr[idx1] !== SORTED_COLOR) colorArr[idx1] = DEFAULT_COLOR;
+          if (colorArr[idx2] !== SORTED_COLOR) colorArr[idx2] = DEFAULT_COLOR;
+          setColors([...colorArr]);
           break;
         }
         case 'swap': {
@@ -121,22 +124,35 @@ function SortingVisualizer() {
           colorArr[idx1] = SWAP_COLOR;
           colorArr[idx2] = SWAP_COLOR;
           swaps++;
-          arr[idx1] = val1;
-          arr[idx2] = val2;
-          setArray([...arr]);
+          
+          setArray(prev => {
+            const newArr = [...prev];
+            newArr[idx1] = val1;
+            newArr[idx2] = val2;
+            return newArr;
+          });
+          
           setColors([...colorArr]);
           await sleep(delay);
-          colorArr[idx1] = DEFAULT_COLOR;
-          colorArr[idx2] = DEFAULT_COLOR;
+          if (colorArr[idx1] !== SORTED_COLOR) colorArr[idx1] = DEFAULT_COLOR;
+          if (colorArr[idx2] !== SORTED_COLOR) colorArr[idx2] = DEFAULT_COLOR;
+          setColors([...colorArr]);
           break;
         }
         case 'overwrite': {
-          arr[anim.index] = anim.value;
-          colorArr[anim.index] = SWAP_COLOR;
-          setArray([...arr]);
+          const { index, value } = anim;
+          colorArr[index] = SWAP_COLOR;
+          
+          setArray(prev => {
+            const newArr = [...prev];
+            newArr[index] = value;
+            return newArr;
+          });
+          
           setColors([...colorArr]);
           await sleep(delay);
-          colorArr[anim.index] = DEFAULT_COLOR;
+          colorArr[index] = DEFAULT_COLOR;
+          setColors([...colorArr]);
           break;
         }
         default: break;
